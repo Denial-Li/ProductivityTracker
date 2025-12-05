@@ -1,0 +1,154 @@
+body {
+    margin: 0;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+      sans-serif;
+    background: #f5f5fb;
+  }
+  
+  .quests-page {
+    max-width: 100%;
+    width: 100%;
+    margin: 40px auto;
+    padding: 0 16px 40px;
+  }
+  
+  .title {
+    font-size: 28px;
+    margin-bottom: 4px;
+  }
+  
+  .subtitle {
+    color: #7b7b93;
+    margin-bottom: 24px;
+  }
+  
+  .stats-row {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  
+  .stat-card {
+    flex: 1;
+    background: white;
+    border-radius: 18px;
+    padding: 16px 20px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.04);
+  }
+  
+  .stat-label {
+    font-size: 13px;
+    color: #999;
+    margin-bottom: 6px;
+  }
+  
+  .stat-value {
+    font-weight: 600;
+    font-size: 18px;
+  }
+  
+  .tabs-row {
+    display: inline-flex;
+    background: #e7e6ff;
+    border-radius: 999px;
+    padding: 4px;
+    margin-bottom: 24px;
+  }
+  
+  .tab {
+    border: none;
+    padding: 8px 20px;
+    border-radius: 999px;
+    background: transparent;
+    font-size: 14px;
+    cursor: pointer;
+    color: #777;
+  }
+  
+  .tab-active {
+    background: #5c5cfb;
+    color: white;
+  }
+  
+  .quests-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .quest-card {
+    background: white;
+    border-radius: 20px;
+    padding: 16px 20px 18px;
+    box-shadow: 0 10px 26px rgba(0, 0, 0, 0.06);
+    border: 1px solid transparent;
+  }
+  
+  .quest-card-completed {
+    border-color: #9de18b;
+    background: #f5fff3;
+  }
+  
+  .quest-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  
+  .quest-title {
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  
+  .quest-progress {
+    font-size: 13px;
+    color: #7b7b93;
+  }
+  
+  .quest-xp {
+    font-size: 14px;
+    font-weight: 600;
+    color: #ff9b3d;
+  }
+  
+  .progress-bar {
+    height: 6px;
+    border-radius: 999px;
+    background: #ecebff;
+    overflow: hidden;
+    margin-bottom: 12px;
+  }
+  
+  .progress-inner {
+    height: 100%;
+    width: 40%; /* placeholder progress */
+    border-radius: inherit;
+    background: linear-gradient(90deg, #7b61ff, #a45dff);
+  }
+  
+  .progress-inner-completed {
+    width: 100%;
+    background: #4ecb71;
+  }
+  
+  .complete-button,
+  .completed-button {
+    width: 100%;
+    border-radius: 999px;
+    padding: 8px 0;
+    font-size: 14px;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .complete-button {
+    background: linear-gradient(90deg, #7b61ff, #a45dff);
+    color: white;
+  }
+  
+  .completed-button {
+    background: #e5ffec;
+    color: #30a85b;
+  }
+  
