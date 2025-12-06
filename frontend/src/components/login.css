@@ -55,11 +55,14 @@
   
   input {
     width: 100%;
-    padding: 14px 16px;
+    padding: 14px 0;
     border-radius: 12px;
     border: 1px solid #e1e1e9;
     margin-bottom: 14px;
     font-size: 15px;
+    justify-content: center;
+    align-items: center;
+    
   }
   
   input:focus {

@@ -1,13 +1,15 @@
 import { useState } from "react";
 import "./Login.css";
+import { useNavigate } from "react-router-dom";
+
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [pw, setPw] = useState("");
-
+  const navigate = useNavigate();
   const handleLogin = (e) => {
     e.preventDefault();
-    //call backend login here
+    navigate("/get-started");
   };
 
   return (
@@ -29,7 +31,7 @@ export default function Login() {
           <label>Email</label>
           <input
             type="email"
-            placeholder="your@email.com"
+            placeholder="  your@email.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
@@ -37,7 +39,7 @@ export default function Login() {
           <label>Password</label>
           <input
             type="password"
-            placeholder="••••••••"
+            placeholder="   ••••••••"
             value={pw}
             onChange={(e) => setPw(e.target.value)}
           />
