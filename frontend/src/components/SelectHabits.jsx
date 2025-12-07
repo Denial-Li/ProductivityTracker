@@ -64,7 +64,7 @@ export default function SelectHabits() {
 
         <button
           className="continue-btn"
-          onClick={() => navigate("/next")}
+          onClick={() => navigate("/join-friends")}
         >
           Continue
         </button>

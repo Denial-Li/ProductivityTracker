@@ -7,6 +7,7 @@ import Login from "./components/Login";
 import { Routes, Route } from "react-router-dom";
 import GetStarted from "./components/GetStarted";
 import SelectHabits from "./components/SelectHabits";
+import JoinFriends from './components/JoinFriends'
 
 
 function App() {
@@ -17,6 +18,7 @@ function App() {
       <Route path="/quests" element={<QuestsPage />} />
       <Route path="/get-started" element={<GetStarted />} />
       <Route path="/select-habits" element={<SelectHabits />} />
+      <Route path="/join-friends" element={<JoinFriends />} />
     </Routes>
   );
 }
