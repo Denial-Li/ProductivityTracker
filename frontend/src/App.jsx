@@ -12,7 +12,7 @@ import CreateGroup from "./components/CreateGroup";
 import JoinGroup from "./components/JoinGroup";
 import HomePage from "./components/HomePage";
 import DuelsPage from "./components/DuelsPage";
-import ProfilePage from "./components/ProfilePage";
+import ProfilePageNEW from "./components/ProfilePage";
 import GroupsPage from "./components/GroupsPage";
 import RanksPage from "./components/RanksPage";
 
@@ -24,7 +24,7 @@ function App() {
       <Route path="/home" element={<HomePage />} />
       <Route path="/quests" element={<QuestsPage />} />
       <Route path="/duels" element={<DuelsPage />} />
-      <Route path="/profile" element={<ProfilePage />} />
+      <Route path="/profile" element={<ProfilePageNEW />} />
       <Route path="/groups" element={<GroupsPage />} />
       <Route path="/ranks" element={<RanksPage />} />
       <Route path="/get-started" element={<GetStarted />} />
