@@ -51,6 +51,7 @@ export default function ProfilePageNEW() {
           onClick={() => {
             localStorage.removeItem("duelhabit:user");
             localStorage.removeItem("duelhabit:onboardingComplete");
+            localStorage.clear();
             navigate("/");
           }}
         >

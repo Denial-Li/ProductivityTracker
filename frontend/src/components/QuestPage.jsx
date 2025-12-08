@@ -42,12 +42,14 @@ const initialQuests = [
 ];
 
 export default function QuestsPage() {
-  const [quests, setQuests] = useState(initialQuests);
+  const [quests, setQuests] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchQuests = async () => {
       const userId = localStorage.getItem("userId");
+      if (!userId) return;
+
       const res = await fetch(`http://localhost:8000/quests/${userId}`);
       const data = await res.json();
       setQuests(data);
@@ -55,11 +57,12 @@ export default function QuestsPage() {
 
     fetchQuests();
   }, []);
-  const handleComplete = (id) => {
-    setQuests((prev) =>
-      prev.map((q) =>
-        q.id === id
-          ? { ...q, completed: true } // mark as completed
+
+  const handleComplete = async (_id) => {
+    setQuests(prev =>
+      prev.map(q =>
+        q._id === _id 
+          ? { ...q, completed: true }
           : q
       )
     );
@@ -104,7 +107,7 @@ export default function QuestsPage() {
       <div className="quests-list">
         {quests.map((quest) => (
           <div
-            key={quest.id}
+            key={quest._id}
             className={
               "quest-card " +
               (quest.completed ? "quest-card-completed" : "")
@@ -143,7 +146,7 @@ export default function QuestsPage() {
             ) : (
               <button
                 className="complete-button"
-                onClick={() => handleComplete(quest.id)}
+                onClick={() => handleComplete(quest._id)}
               >
                 Mark Complete
               </button>
