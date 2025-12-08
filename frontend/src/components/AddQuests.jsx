@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./addQuests.css";
+import api from "./api";
 export default function AddQuest() {
   const [title, setTitle] = useState("");
   const [xp, setXp] = useState("");
@@ -10,19 +11,17 @@ export default function AddQuest() {
     e.preventDefault();
 
     const userId = localStorage.getItem("userId"); // saved from login
+    console.log("userId =>", userId);
 
-    await fetch("http://localhost:8000/quests", {
-      method: "POST",
-      headers: { 
-        "Content-Type": "application/json" 
-      },
-      body: JSON.stringify({
-        userId,
-        title,
-        xp: Number(xp),
-        completed: false
-      })
+    await api.post("/quests", {
+      userId,
+      title,
+      xp: parseInt(xp, 10),
+      completed: false
     });
+   
+    
+    
 
     navigate("/quests"); // go back to quests page
   };

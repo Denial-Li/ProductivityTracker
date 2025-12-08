@@ -24,6 +24,8 @@ export default function Login() {
       localStorage.setItem("userId", data.id);
       localStorage.setItem("email", data.email);
       localStorage.setItem("duelhabit:user", JSON.stringify(data));
+      localStorage.setItem("userId", data.id);
+
       // we assume returning users already did onboarding;
       // if you want, you can store this in DB and return it here
       localStorage.setItem("duelhabit:onboardingComplete", "true");
