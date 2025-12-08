@@ -1,15 +1,31 @@
 import { useState } from "react";
 import "./Login.css";
 import { useNavigate } from "react-router-dom";
+import api from "./api";
 
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [pw, setPw] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    navigate("/get-started");
+    setError(null);
+    setLoading(true);
+
+    try {
+      await api.post("/auth/login", {
+        email,
+        password: pw,
+      });
+      navigate("/get-started");
+    } catch (err) {
+      setError("Unable to login right now. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -44,11 +60,13 @@ export default function Login() {
             onChange={(e) => setPw(e.target.value)}
           />
 
-          <button type="submit" className="login-btn">
-            Login
+          <button type="submit" className="login-btn" disabled={loading}>
+            {loading ? "Logging in..." : "Login"}
           </button>
 
         </form>
+
+        {error && <p className="error-text">{error}</p>}
 
         <button className="google-btn">
           Continue with Google

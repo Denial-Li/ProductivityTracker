@@ -12,7 +12,7 @@ export default function CreateGroup() {
     if (!canContinue) return;
 
     // to do: call backend
-    navigate("/group-created");
+    navigate("/home");
   };
 
   return (
