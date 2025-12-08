@@ -35,6 +35,7 @@ const readStoredUser = () => {
     return null;
   }
 };
+import AddQuest from "./components/AddQuests";
 
 function App() {
   const location = useLocation();
@@ -78,6 +79,7 @@ function App() {
       <Route path="/join-friends" element={<JoinFriends />} />
       <Route path="/create-group" element={<CreateGroup />} />
       <Route path="/join-group" element={<JoinGroup />} />
+      
     </Routes>
     {hasCompletedOnboarding && <Navigation />}
     </>
