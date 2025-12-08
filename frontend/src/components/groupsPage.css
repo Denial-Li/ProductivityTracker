@@ -124,15 +124,40 @@
     border: 1px solid #eee;
   }
   
-  .code-box p {
-    margin: 0;
-    font-size: 13px;
-    color: #777;
-  }
-  
-  .code {
-    margin-top: 5px;
-    font-size: 15px;
-    font-weight: 600;
-  }
+.code-box p {
+  margin: 0;
+  font-size: 13px;
+  color: #777;
+}
+
+.code {
+  margin-top: 5px;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.group-form {
+  background: white;
+  border: 1px solid #eee;
+  padding: 18px;
+  border-radius: 16px;
+  margin-bottom: 18px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.04);
+  max-width: 480px;
+}
+
+.group-input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid #ddd;
+  font-size: 15px;
+  margin: 10px 0 12px;
+}
+
+.group-error {
+  color: #d32f2f;
+  margin-bottom: 12px;
+  font-size: 14px;
+}
   

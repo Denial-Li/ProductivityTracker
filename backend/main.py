@@ -1,4 +1,6 @@
 from datetime import datetime
+import random
+import string
 from fastapi import FastAPI, HTTPException
 import uvicorn
 from pydantic import BaseModel, EmailStr
@@ -54,10 +56,23 @@ class DuelCreateRequest(BaseModel):
     opponentId: Optional[str] = None
     opponentName: str
 
+class GroupCreateRequest(BaseModel):
+    name: str
+    userId: str  # creator/owner
+
+class GroupJoinRequest(BaseModel):
+    userId: str
+    code: str
 
 
 def hash_password(password: str) -> str:
     return hashlib.sha256(password.encode("utf-8")).hexdigest()
+
+
+def generate_group_code(length: int = 5) -> str:
+    """Return a random alphanumeric code like 'A1B2C'."""
+    alphabet = string.ascii_uppercase + string.digits
+    return "".join(random.choice(alphabet) for _ in range(length))
 
 @app.on_event("startup")
 async def on_startup():
@@ -121,6 +136,82 @@ async def list_quests(userId: str):
     for q in quests:
         q["_id"] = str(q["_id"])
     return quests
+
+
+@app.post("/groups")
+async def create_group(payload: GroupCreateRequest):
+    """Create a new group with a random 5-char code and add creator as member."""
+    db = get_db()
+
+    # generate a unique code
+    code = None
+    max_attempts = 10
+    for _ in range(max_attempts):
+        candidate = generate_group_code(5)
+        exists = await db.groups.find_one({"code": candidate})
+        if not exists:
+            code = candidate
+            break
+    if code is None:
+        raise HTTPException(status_code=500, detail="Unable to generate group code.")
+
+    doc = {
+        "name": payload.name.strip(),
+        "code": code,
+        "ownerId": payload.userId,
+        "members": [payload.userId],
+        "created_at": datetime.utcnow().isoformat(),
+    }
+    result = await db.groups.insert_one(doc)
+    return {
+        "id": str(result.inserted_id),
+        "name": doc["name"],
+        "code": doc["code"],
+        "ownerId": doc["ownerId"],
+        "members": doc["members"],
+    }
+
+
+@app.post("/groups/join")
+async def join_group(payload: GroupJoinRequest):
+    """Join an existing group via code."""
+    db = get_db()
+    code = payload.code.strip().upper()
+    group = await db.groups.find_one({"code": code})
+    if not group:
+        raise HTTPException(status_code=404, detail="Group code not found.")
+
+    await db.groups.update_one(
+        {"_id": group["_id"]},
+        {"$addToSet": {"members": payload.userId}},
+    )
+
+    # return updated group info
+    updated = await db.groups.find_one({"_id": group["_id"]})
+    return {
+        "id": str(updated["_id"]),
+        "name": updated["name"],
+        "code": updated["code"],
+        "ownerId": updated.get("ownerId"),
+        "members": updated.get("members", []),
+    }
+
+
+@app.get("/groups/{userId}")
+async def list_groups(userId: str):
+    """List groups a user belongs to."""
+    db = get_db()
+    groups = await db.groups.find({"members": userId}).to_list(50)
+    resp = []
+    for g in groups:
+        resp.append({
+            "id": str(g["_id"]),
+            "name": g.get("name"),
+            "code": g.get("code"),
+            "ownerId": g.get("ownerId"),
+            "members": g.get("members", []),
+        })
+    return resp
 
 
 #user auth and login endpoint

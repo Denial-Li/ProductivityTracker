@@ -1,6 +1,7 @@
 import "./CreateGroup.css";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import api from "./api";
 
 export default function CreateGroup() {
   const navigate = useNavigate();
@@ -8,12 +9,31 @@ export default function CreateGroup() {
 
   const canContinue = name.trim().length > 0;
 
-  const handleContinue = () => {
+  const handleContinue = async () => {
     if (!canContinue) return;
 
-    // to do: call backend
-    localStorage.setItem("duelhabit:onboardingComplete", "true");
-    navigate("/home");
+    const userId = localStorage.getItem("userId");
+    if (!userId) {
+      alert("Please log in first.");
+      navigate("/login");
+      return;
+    }
+
+    try {
+      const { data } = await api.post("/groups", {
+        name,
+        userId,
+      });
+
+      localStorage.setItem("groupId", data.id);
+      localStorage.setItem("groupCode", data.code);
+      localStorage.setItem("groupName", data.name);
+      localStorage.setItem("duelhabit:onboardingComplete", "true");
+      navigate("/home");
+    } catch (err) {
+      console.error(err);
+      alert("Unable to create group right now.");
+    }
   };
 
   return (
