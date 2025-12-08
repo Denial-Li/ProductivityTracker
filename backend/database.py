@@ -1,9 +1,10 @@
+import os
 from motor.motor_asyncio import AsyncIOMotorClient
-from .config import MONGO_URL, MONGO_DB
+from config import MONGO_URL, MONGO_DB
+
 
 client: AsyncIOMotorClient | None = None
 db = None
-
 
 async def connect_db():
   """Initialize the Mongo client once on app startup."""
