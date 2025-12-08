@@ -1,5 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "./quests.css";
+import { useNavigate } from "react-router-dom";
+
 
 const initialQuests = [
   {
@@ -41,7 +43,18 @@ const initialQuests = [
 
 export default function QuestsPage() {
   const [quests, setQuests] = useState(initialQuests);
+  const navigate = useNavigate();
 
+  useEffect(() => {
+    const fetchQuests = async () => {
+      const userId = localStorage.getItem("userId");
+      const res = await fetch(`http://localhost:8000/quests/${userId}`);
+      const data = await res.json();
+      setQuests(data);
+    };
+
+    fetchQuests();
+  }, []);
   const handleComplete = (id) => {
     setQuests((prev) =>
       prev.map((q) =>
@@ -60,6 +73,7 @@ export default function QuestsPage() {
 
   return (
     <div className="quests-page">
+      <div className="quests-wrapper">
       <h1 className="title">Quests</h1>
       <p className="subtitle">Complete quests to earn XP and level up</p>
 
@@ -74,11 +88,18 @@ export default function QuestsPage() {
           <div className="stat-label">XP Earned</div>
           <div className="stat-value">{totalXP} XP</div>
         </div>
+        
       </div>
 
       <div className="tabs-row">
         <button className="tab tab-active">Daily Quests</button>
       </div>
+
+      
+      <div className="tabs-row">
+      <button className="tab tab-active" onClick={()=>navigate("/add-quests")}>Add New Quest</button>
+            </div>
+
 
       <div className="quests-list">
         {quests.map((quest) => (
@@ -129,6 +150,7 @@ export default function QuestsPage() {
             )}
           </div>
         ))}
+      </div>
       </div>
     </div>
   );

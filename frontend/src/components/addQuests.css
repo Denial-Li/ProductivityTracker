@@ -1,0 +1,80 @@
+.add-quest-page {
+    height: 100vh;
+    /*background: linear-gradient(135deg, #6249F6, #A687FF);*/
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+  }
+  
+  .add-quest-card {
+    background: white;
+    width: 400px;
+    padding: 35px;
+    border-radius: 18px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    animation: fadeIn .4s ease;
+  }
+  
+  .add-quest-card h2 {
+    margin-bottom: 15px;
+    font-weight: 700;
+    font-size: 24px;
+    color: #3a2e79;
+    text-align: center;
+  }
+  
+  .input-group {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .input-group label {
+    font-size: 15px;
+    color: #444;
+    margin-bottom: 6px;
+    
+  }
+  
+  .input-group input {
+   /* padding: 12px 0px;*/
+    border: 2px solid #dad8ff;
+    border-radius: 10px;
+    font-size: 14px;
+    padding-left:10px;
+  }
+  
+  .add-btn {
+    width: 100%;
+    background: #6E55F7;
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 10px;
+    font-size: 15px;
+    margin-top: 25px;
+    cursor: pointer;
+    transition: 0.2s;
+  }
+  
+  .add-btn:hover {
+    background: #5a44d7;
+  }
+  
+  .back-btn {
+    width: 100%;
+    background: transparent;
+    color: #6E55F7;
+    border: none;
+    padding: 12px;
+    margin-top: 10px;
+    font-size: 15px;
+    cursor: pointer;
+  }
+  
+  @keyframes fadeIn {
+    from {opacity: 0; transform: translateY(12px);}
+    to   {opacity: 1; transform: translateY(0);}
+  }
+  

@@ -30,6 +30,14 @@ class LoginRequest(BaseModel):
     email: EmailStr
     password: str
 
+class QuestRequest(BaseModel):
+    userId: str
+    title: str
+    xp: int
+    completed: bool = False
+
+
+
 
 class RegisterRequest(BaseModel):
     email: EmailStr
@@ -82,6 +90,27 @@ async def register(payload: RegisterRequest):
         "email": doc["email"],
         "created_at": doc["created_at"],
     }
+
+#quests adding
+@app.post("/quests")
+async def create_quest(quest: QuestRequest):
+    db = get_db()
+    data = quest.dict()
+    result = await db.quests.insert_one(data)
+    data["_id"] = str(result.inserted_id)
+    return data
+
+
+#fetch quests
+@app.get("/quests/{userId}")
+async def list_quests(userId: str):
+    db = get_db()
+    quests = await db.quests.find({"userId": userId}).to_list(100)
+    # convert _id to string
+    for q in quests:
+        q["_id"] = str(q["_id"])
+    return quests
+
 
 
 @app.post("/auth/login")

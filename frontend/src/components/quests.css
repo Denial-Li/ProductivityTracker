@@ -11,6 +11,16 @@ body {
     margin: 40px auto;
     padding: 0 16px 40px;
   }
+
+  /* central rounded "phone" card */
+  .quests-wrapper {
+  width: 420px;
+  /*max-width: calc(100% - 32px);*/
+  background: #f5f5fb;
+  border-radius: 32px;
+  padding: 24px 24px 32px;
+  box-shadow: 0 22px 40px rgba(0, 0, 0, 0.18);
+}
   
   .title {
     font-size: 28px;

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-
+import "./addQuests.css";
 export default function AddQuest() {
   const [title, setTitle] = useState("");
   const [xp, setXp] = useState("");
@@ -19,7 +19,8 @@ export default function AddQuest() {
       body: JSON.stringify({
         userId,
         title,
-        xp: Number(xp)
+        xp: Number(xp),
+        completed: false
       })
     });
 
@@ -27,27 +28,48 @@ export default function AddQuest() {
   };
 
   return (
-    <div style={{padding:"40px"}}>
-      <h2>Add New Quest</h2>
-
-      <form onSubmit={handleSubmit}>
-        <label>Quest Title</label><br/>
-        <input 
-          value={title}
-          onChange={(e)=>setTitle(e.target.value)}
-          placeholder="Study for 30 min"
-        /><br/><br/>
-
-        <label>XP</label><br/>
-        <input 
-          type="number"
-          value={xp}
-          onChange={(e)=>setXp(e.target.value)}
-          placeholder="50"
-        /><br/><br/>
-
-        <button type="submit">Save Quest</button>
-      </form>
+    <div className="add-quest-page">
+  
+      <div className="add-quest-card">
+  
+        <h2>Add New Quest</h2>
+  
+        <form onSubmit={handleSubmit}>
+  
+          <div className="input-group">
+            <label>Quest Title</label>
+            <input
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="Study for 30 min"
+            />
+          </div>
+  
+          <div className="input-group">
+            <label>XP</label>
+            <input
+              type="number"
+              value={xp}
+              onChange={(e) => setXp(e.target.value)}
+              placeholder="50"
+            />
+          </div>
+  
+          <button type="submit" className="add-btn">
+            Save Quest
+          </button>
+  
+          <button
+            type="button"
+            className="back-btn"
+            onClick={() => navigate("/quests")}
+          >
+            ← Back
+          </button>
+  
+        </form>
+      </div>
     </div>
   );
+  
 }

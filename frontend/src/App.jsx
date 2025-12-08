@@ -117,7 +117,7 @@ function App() {
         <Route path="/profile" element={renderMainScreen(<ProfilePageNEW />)} />
         <Route path="/groups" element={renderMainScreen(<GroupsPage />)} />
         <Route path="/ranks" element={renderMainScreen(<RanksPage />)} />
-        <Route path="/add-quest" element={renderMainScreen(<AddQuest />)} />
+        <Route path="/add-quests" element={renderMainScreen(<AddQuest />)} />
 
        
         <Route path="*" element={<Navigate to="/" replace />} />
