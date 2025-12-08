@@ -112,3 +112,19 @@
     color: #5858ff;
   }
   
+.error-text {
+  margin-top: 12px;
+  color: #e11d48; /* red */
+  font-size: 13px;
+}
+
+.link-button {
+  border: none;
+  padding: 0;
+  margin: 0;
+  background: transparent;
+  color: #5858ff;
+  cursor: pointer;
+  font-size: 14px;
+  text-decoration: none;
+}

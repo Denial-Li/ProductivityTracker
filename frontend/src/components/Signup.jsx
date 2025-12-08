@@ -1,41 +1,36 @@
 import { useState } from "react";
-import "./Login.css";
 import { useNavigate } from "react-router-dom";
+import "./Login.css";       //reuse same styles
 import api from "./api";
 
-export default function Login() {
+export default function Signup() {
   const [email, setEmail] = useState("");
   const [pw, setPw] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
-  const handleLogin = async (e) => {
+  const handleSignup = async (e) => {
     e.preventDefault();
     setError(null);
     setLoading(true);
 
     try {
-      const { data } = await api.post("/auth/login", {
+      const { data } = await api.post("/auth/register", {
         email,
         password: pw,
       });
 
+      // Save user + mark onboarding not complete yet
       localStorage.setItem("duelhabit:user", JSON.stringify(data));
-      // we assume returning users already did onboarding;
-      // if you want, you can store this in DB and return it here
-      localStorage.setItem("duelhabit:onboardingComplete", "true");
+      localStorage.setItem("duelhabit:onboardingComplete", "false");
 
-      navigate("/");
+      navigate("/get-started");
     } catch (err) {
-      const status = err?.response?.status;
-      const backendMessage = err?.response?.data?.detail;
-
-      if (status === 404 || status === 401) {
-        setError(backendMessage || "Invalid email or password.");
-      } else {
-        setError("Unable to login right now. Please try again.");
-      }
+      const msg =
+        err?.response?.data?.detail ||
+        "Unable to create account. Please try again.";
+      setError(msg);
     } finally {
       setLoading(false);
     }
@@ -48,12 +43,12 @@ export default function Login() {
           <span>⚔️</span>
         </div>
 
-        <h2>DuelHabit</h2>
+        <h2>Create your DuelHabit account</h2>
         <p className="subtitle">
-          Build habits through friendly competition
+          Start building habits through friendly competition
         </p>
 
-        <form onSubmit={handleLogin}>
+        <form onSubmit={handleSignup}>
           <label>Email</label>
           <input
             type="email"
@@ -73,28 +68,22 @@ export default function Login() {
           />
 
           <button type="submit" className="login-btn" disabled={loading}>
-            {loading ? "Logging in..." : "Login"}
+            {loading ? "Creating account..." : "Sign up"}
           </button>
         </form>
 
         {error && <p className="error-text">{error}</p>}
 
-        <button className="google-btn" type="button">
-          Continue with Google
-        </button>
-
         <div className="links">
           <button
             type="button"
-            onClick={() => navigate("/signup")}
+            onClick={() => navigate("/login")}
             className="link-button"
           >
-            Don't have an account? <b>Sign up</b>
+            Already have an account? <b>Log in</b>
           </button>
-          <a href="#">Forgot Password?</a>
         </div>
       </div>
     </div>
   );
 }
-

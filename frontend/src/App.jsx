@@ -14,6 +14,8 @@ import ProfilePageNEW from "./components/ProfilePage";
 import GroupsPage from "./components/GroupsPage";
 import RanksPage from "./components/RanksPage";
 import Navigation from "./components/Navigation";
+import Signup from "./components/Signup";
+import AddQuest from "./components/AddQuests";
 
 const onboardingPaths = new Set([
   "/get-started",
@@ -35,7 +37,6 @@ const readStoredUser = () => {
     return null;
   }
 };
-import AddQuest from "./components/AddQuests";
 
 function App() {
   const location = useLocation();
@@ -45,43 +46,162 @@ function App() {
   const hasCompletedOnboarding =
     localStorage.getItem("duelhabit:onboardingComplete") === "true";
 
-  if (!isAuthenticated) {
-    return <Login />;
-  }
+  const isOnboardingRoute = onboardingPaths.has(location.pathname);
 
-  if (!hasCompletedOnboarding && !onboardingPaths.has(location.pathname)) {
-    return <Navigate to="/get-started" replace />;
-  }
-  
+  const showNav = isAuthenticated && hasCompletedOnboarding;
+
   return (
     <>
-    <Routes>
-      <Route
-        path="/"
-        element={
-          hasCompletedOnboarding ? (
-            <Navigate to="/home" replace />
-          ) : (
-            <Navigate to="/get-started" replace />
-          )
-        }
-      />
-      <Route path="/home" element={<HomePage />} />
-      <Route path="/quests" element={<QuestsPage />} />
-      <Route path="/duels" element={<DuelsPage />} />
-      <Route path="/duels" element={<DuelsPage />} />
-      <Route path="/duels/new" element={<CreateDuel />} /> 
-      <Route path="/profile" element={<ProfilePageNEW />} />
-      <Route path="/groups" element={<GroupsPage />} />
-      <Route path="/ranks" element={<RanksPage />} />
-      <Route path="/get-started" element={<GetStarted />} />
-      <Route path="/select-habits" element={<SelectHabits />} />
-      <Route path="/join-friends" element={<JoinFriends />} />
-      <Route path="/create-group" element={<CreateGroup />} />
-      <Route path="/join-group" element={<JoinGroup />} />
-      
-    </Routes>
-    {hasCompletedOnboarding && <Navigation />}
+      <Routes>
+        {/* Root: decide where to send them */}
+        <Route
+          path="/"
+          element={
+            isAuthenticated
+              ? hasCompletedOnboarding
+                ? <Navigate to="/home" replace />
+                : <Navigate to="/get-started" replace />
+              : <Navigate to="/login" replace />
+          }
+        />
+
+        {/* Auth screens (accessible when NOT logged in) */}
+        <Route
+          path="/login"
+          element={
+            isAuthenticated
+              ? <Navigate to={hasCompletedOnboarding ? "/home" : "/get-started"} replace />
+              : <Login />
+          }
+        />
+        <Route
+          path="/signup"
+          element={
+            isAuthenticated
+              ? <Navigate to={hasCompletedOnboarding ? "/home" : "/get-started"} replace />
+              : <Signup />
+          }
+        />
+
+        {/* Onboarding routes (must be logged in) */}
+        <Route
+          path="/get-started"
+          element={
+            isAuthenticated ? <GetStarted /> : <Navigate to="/login" replace />
+          }
+        />
+        <Route
+          path="/select-habits"
+          element={
+            isAuthenticated ? <SelectHabits /> : <Navigate to="/login" replace />
+          }
+        />
+        <Route
+          path="/join-friends"
+          element={
+            isAuthenticated ? <JoinFriends /> : <Navigate to="/login" replace />
+          }
+        />
+        <Route
+          path="/create-group"
+          element={
+            isAuthenticated ? <CreateGroup /> : <Navigate to="/login" replace />
+          }
+        />
+        <Route
+          path="/join-group"
+          element={
+            isAuthenticated ? <JoinGroup /> : <Navigate to="/login" replace />
+          }
+        />
+
+        {/* Main app routes (must be logged in AND done with onboarding) */}
+        <Route
+          path="/home"
+          element={
+            isAuthenticated
+              ? hasCompletedOnboarding
+                ? <HomePage />
+                : <Navigate to="/get-started" replace />
+              : <Navigate to="/login" replace />
+          }
+        />
+        <Route
+          path="/quests"
+          element={
+            isAuthenticated
+              ? hasCompletedOnboarding
+                ? <QuestsPage />
+                : <Navigate to="/get-started" replace />
+              : <Navigate to="/login" replace />
+          }
+        />
+        <Route
+          path="/duels"
+          element={
+            isAuthenticated
+              ? hasCompletedOnboarding
+                ? <DuelsPage />
+                : <Navigate to="/get-started" replace />
+              : <Navigate to="/login" replace />
+          }
+        />
+        <Route
+          path="/duels/new"
+          element={
+            isAuthenticated
+              ? hasCompletedOnboarding
+                ? <CreateDuel />
+                : <Navigate to="/get-started" replace />
+              : <Navigate to="/login" replace />
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            isAuthenticated
+              ? hasCompletedOnboarding
+                ? <ProfilePageNEW />
+                : <Navigate to="/get-started" replace />
+              : <Navigate to="/login" replace />
+          }
+        />
+        <Route
+          path="/groups"
+          element={
+            isAuthenticated
+              ? hasCompletedOnboarding
+                ? <GroupsPage />
+                : <Navigate to="/get-started" replace />
+              : <Navigate to="/login" replace />
+          }
+        />
+        <Route
+          path="/ranks"
+          element={
+            isAuthenticated
+              ? hasCompletedOnboarding
+                ? <RanksPage />
+                : <Navigate to="/get-started" replace />
+              : <Navigate to="/login" replace />
+          }
+        />
+        <Route
+          path="/add-quest"
+          element={
+            isAuthenticated
+              ? hasCompletedOnboarding
+                ? <AddQuest />
+                : <Navigate to="/get-started" replace />
+              : <Navigate to="/login" replace />
+          }
+        />
+
+        {/* Catch-all */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+
+      {showNav && <Navigation />}
     </>
   );
 }

@@ -6,14 +6,15 @@ from fastapi.middleware.cors import CORSMiddleware
 from typing import List
 from dotenv import load_dotenv
 
-
 from database import connect_db, close_db, get_db
+import hashlib
+
 load_dotenv()
 app = FastAPI()
 
 origins = [
     "http://localhost:5173",
-    # add url here later
+    # add url here later (deployed frontend)
 ]
 
 app.add_middleware(
@@ -28,6 +29,15 @@ app.add_middleware(
 class LoginRequest(BaseModel):
     email: EmailStr
     password: str
+
+
+class RegisterRequest(BaseModel):
+    email: EmailStr
+    password: str
+
+
+def hash_password(password: str) -> str:
+    return hashlib.sha256(password.encode("utf-8")).hexdigest()
 
 
 @app.on_event("startup")
@@ -45,21 +55,24 @@ def root():
     return {"Hello": "backend running"}
 
 
-@app.post("/auth/login")
-async def login(payload: LoginRequest):
+@app.post("/auth/register")
+async def register(payload: RegisterRequest):
+    """
+    Create a new user account.
+    If the email already exists, return 400.
+    """
     db = get_db()
 
     existing = await db.users.find_one({"email": payload.email})
     if existing:
-        return {
-            "id": str(existing["_id"]),
-            "email": existing["email"],
-            "created_at": existing.get("created_at"),
-        }
+        raise HTTPException(
+            status_code=400,
+            detail="An account with this email already exists.",
+        )
 
     doc = {
         "email": payload.email,
-        "password": payload.password,  # TODO: hash in real app
+        "password": hash_password(payload.password),
         "created_at": datetime.utcnow().isoformat(),
     }
     result = await db.users.insert_one(doc)

@@ -16,6 +16,7 @@ export default function Navigation() {
   //routes were navbar SHOULDNT be visible
   const hiddenPaths = [
     "/login",
+    "/signup",
     "/get-started",
     "/select-habits",
     "/join-friends",
