@@ -3,7 +3,7 @@ from fastapi import FastAPI, HTTPException
 import uvicorn
 from pydantic import BaseModel, EmailStr
 from fastapi.middleware.cors import CORSMiddleware
-from typing import List
+from typing import List, Optional
 from dotenv import load_dotenv
 
 from database import connect_db, close_db, get_db
@@ -36,17 +36,28 @@ class QuestRequest(BaseModel):
     xp: int
     completed: bool = False
 
-
-
-
 class RegisterRequest(BaseModel):
     email: EmailStr
     password: str
 
+class DuelCreateRequest(BaseModel):
+    #duel creator
+    userId: str
+
+    # habit + goal settings
+    habit: str          # "sleep", "hydration", etc
+    targetHours: int
+    duration: str      #"24h", "48h", "72h", "7d"
+
+    # group + opponent (string for now; no group backend yet)
+    groupId: Optional[str] = None
+    opponentId: Optional[str] = None
+    opponentName: str
+
+
 
 def hash_password(password: str) -> str:
     return hashlib.sha256(password.encode("utf-8")).hexdigest()
-
 
 @app.on_event("startup")
 async def on_startup():
@@ -112,7 +123,7 @@ async def list_quests(userId: str):
     return quests
 
 
-
+#user auth and login endpoint
 @app.post("/auth/login")
 async def login(payload: LoginRequest):
     """
@@ -142,6 +153,64 @@ async def login(payload: LoginRequest):
         "email": existing["email"],
         "created_at": existing.get("created_at"),
     }
+
+#duel creation endpoint 
+@app.post("/duels")
+async def create_duel(duel: DuelCreateRequest):
+    #create new duel, store at pending with no progress
+    db = get_db()
+    data = duel.dict()
+
+    # basic fields
+    # Example XP formula: 250 base + 10 * targetHours
+    xp = 250 + 10 * data["targetHours"]
+
+    doc = {
+        "userId": data["userId"],           # creator of the duel
+        "habit": data["habit"],             # e.g. "sleep"
+        "targetHours": data["targetHours"],
+        "duration": data["duration"],
+        "groupId": data.get("groupId"),
+        "opponentId": data.get("opponentId"),
+        "opponentName": data["opponentName"],
+        "xp": xp,
+        "status": "pending",                # start pending
+        "youPct": 0,                        # % progress for creator
+        "oppPct": 0,                        # % progress for opponent
+        "result": None,                     # "won"/"lost" later
+        "created_at": datetime.utcnow().isoformat(),
+    }
+
+    result = await db.duels.insert_one(doc)
+    doc["_id"] = str(result.inserted_id)
+    return doc
+
+@app.get("/duels/{userId}")
+async def list_duels(userId: str):
+    #returns all duels created by a user
+    db = get_db()
+    duels = await db.duels.find({"userId": userId}).to_list(100)
+
+    ui_duels = []
+    for d in duels:
+        habit_raw = d.get("habit", "")
+        habit_label = habit_raw.capitalize() if habit_raw else ""
+
+        ui_duels.append({
+            "id": str(d["_id"]),
+            "title": f"{habit_label} Duel" if habit_label else d.get("title", "Habit Duel"),
+            "habit": habit_label,
+            "opponent": d.get("opponentName", "Friend"),
+            "xp": d.get("xp", 250),
+            # for now, just a placeholder string; later you can compute from created_at + duration
+            "timeLeft": "24h left",
+            "status": d.get("status", "pending"),
+            "youPct": d.get("youPct", 0),
+            "oppPct": d.get("oppPct", 0),
+            "result": d.get("result"),
+        })
+
+    return ui_duels
 
 
 if __name__ == "__main__":

@@ -2,6 +2,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./createDuel.css";
 
+const API_BASE = "http://localhost:8000";
+
 const HABITS = [
   { id: "sleep", label: "Sleep", icon: "🌙" },
   { id: "hydration", label: "Hydration", icon: "💧" },
@@ -36,39 +38,50 @@ const GROUPS = [
   },
 ];
 
+
 export default function CreateDuel() {
-  const navigate = useNavigate();
-  const [step, setStep] = useState(1);
-  const [selectedHabit, setSelectedHabit] = useState("sleep");
-  const [targetHours, setTargetHours] = useState(8);
-  const [duration, setDuration] = useState("24h");
-  const [groupId, setGroupId] = useState(GROUPS[0].id);
-  const [opponentId, setOpponentId] = useState(GROUPS[0].members[0].id);
+  // ...existing state...
 
-  const goBack = () => {
-    if (step === 1) {
-      navigate("/duels");
-    } else {
-      setStep((s) => s - 1);
+  const handleCreate = async () => {
+    const userId = localStorage.getItem("userId");
+    if (!userId) {
+      alert("You must be logged in to create a duel.");
+      return;
     }
-  };
 
-  const handleContinue = () => {
-    if (step < 4) setStep((s) => s + 1);
-    else handleCreate();
-  };
+    // find opponent name from the selected group
+    const activeGroup = GROUPS.find((g) => g.id === groupId) ?? GROUPS[0];
+    const friend =
+      activeGroup.members.find((m) => m.id === opponentId) ??
+      activeGroup.members[0];
 
-  const handleCreate = () => {
-    const duel = {
+    const payload = {
+      userId,
       habit: selectedHabit,
       targetHours,
       duration,
       groupId,
       opponentId,
+      opponentName: friend?.name || "Friend",
     };
-    console.log("Creating duel:", duel);
-    // TODO: send to backend
-    navigate("/duels");
+
+    try {
+      const res = await fetch(`${API_BASE}/duels`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.detail || "Failed to create duel");
+      }
+
+      navigate("/duels");
+    } catch (e) {
+      console.error(e);
+      alert(e.message);
+    }
   };
 
   return (

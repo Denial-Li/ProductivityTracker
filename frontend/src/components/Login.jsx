@@ -21,6 +21,8 @@ export default function Login() {
         password: pw,
       });
 
+      localStorage.setItem("userId", data.id);
+      localStorage.setItem("email", data.email);
       localStorage.setItem("duelhabit:user", JSON.stringify(data));
       // we assume returning users already did onboarding;
       // if you want, you can store this in DB and return it here
@@ -97,4 +99,3 @@ export default function Login() {
     </div>
   );
 }
-
