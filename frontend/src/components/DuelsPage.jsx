@@ -16,6 +16,7 @@ export default function DuelsPage() {
   const [duels, setDuels] = useState([]);
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const [loadingId, setLoadingId] = useState(null);
 
   useEffect(() => {
     async function loadDuels() {
@@ -61,6 +62,37 @@ export default function DuelsPage() {
   let duelsToShow = activeDuels;
   if (tab === "pending") duelsToShow = pendingDuels;
   if (tab === "completed") duelsToShow = completedDuels;
+
+  const handleAccept = async (duelId) => {
+    const userId = localStorage.getItem("userId");
+    if (!userId) {
+      setError("You must be logged in to accept duels.");
+      return;
+    }
+    setLoadingId(duelId);
+    try {
+      const res = await fetch(`${API_BASE}/duels/${duelId}/accept`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId }),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.detail || "Failed to accept duel");
+      }
+      setDuels((prev) =>
+        prev.map((d) =>
+          d.id === duelId ? { ...d, status: "active" } : d
+        )
+      );
+      setTab("active");
+    } catch (e) {
+      console.error(e);
+      setError(e.message);
+    } finally {
+      setLoadingId(null);
+    }
+  };
 
   return (
     <div className="duelhub-wrapper">
@@ -115,7 +147,12 @@ export default function DuelsPage() {
 
           {tab === "pending" &&
             pendingDuels.map((duel) => (
-              <PendingDuelCard key={duel.id} duel={duel} />
+              <PendingDuelCard
+                key={duel.id}
+                duel={duel}
+                onAccept={handleAccept}
+                loadingId={loadingId}
+              />
             ))}
 
           {tab === "completed" &&
@@ -173,8 +210,9 @@ function ActiveDuelCard({ duel }) {
   );
 }
 
-function PendingDuelCard({ duel }) {
+function PendingDuelCard({ duel, onAccept, loadingId }) {
   const icon = HABIT_ICONS[duel.habit?.toLowerCase()] || "⌛";
+  const canAccept = duel.viewerRole === "opponent";
   return (
     <div className="duel-card duel-card-pending">
       <div className="duel-card-top">
@@ -192,7 +230,17 @@ function PendingDuelCard({ duel }) {
       </div>
 
       <div className="duel-pending-banner">
-        Pending acceptance. You&apos;ll be notified when it starts.
+        {canAccept ? (
+          <button
+            className="duelhub-tab-btn duelhub-tab-active"
+            onClick={() => onAccept(duel.id)}
+            disabled={loadingId === duel.id}
+          >
+            {loadingId === duel.id ? "Accepting..." : "Accept Duel"}
+          </button>
+        ) : (
+          "Pending acceptance. You'll be notified when it starts."
+        )}
       </div>
     </div>
   );

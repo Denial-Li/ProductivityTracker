@@ -65,6 +65,8 @@ class GroupJoinRequest(BaseModel):
     userId: str
     code: str
 
+class DuelAcceptRequest(BaseModel):
+    userId: str
 
 def hash_password(password: str) -> str:
     return hashlib.sha256(password.encode("utf-8")).hexdigest()
@@ -350,30 +352,72 @@ async def create_duel(duel: DuelCreateRequest):
 
 @app.get("/duels/{userId}")
 async def list_duels(userId: str):
-    #returns all duels created by a user
+    """
+    Return duels where the user is either the creator or the opponent.
+    Also returns perspective-adjusted progress fields so UI can use `youPct`.
+    """
     db = get_db()
-    duels = await db.duels.find({"userId": userId}).to_list(100)
+    duels = await db.duels.find({"$or": [{"userId": userId}, {"opponentId": userId}]}).to_list(100)
 
     ui_duels = []
     for d in duels:
         habit_raw = d.get("habit", "")
         habit_label = habit_raw.capitalize() if habit_raw else ""
+        viewer_role = "creator" if d.get("userId") == userId else "opponent"
+
+        # adjust progress so "you" is always the viewer
+        if viewer_role == "creator":
+            you_pct = d.get("youPct", 0)
+            opp_pct = d.get("oppPct", 0)
+            opponent_label = d.get("opponentName", "Friend")
+        else:
+            you_pct = d.get("oppPct", 0)
+            opp_pct = d.get("youPct", 0)
+            opponent_label = "Challenger"
 
         ui_duels.append({
             "id": str(d["_id"]),
             "title": f"{habit_label} Duel" if habit_label else d.get("title", "Habit Duel"),
             "habit": habit_label,
-            "opponent": d.get("opponentName", "Friend"),
+            "opponent": opponent_label,
             "xp": d.get("xp", 250),
-            # for now, just a placeholder string; later you can compute from created_at + duration
             "timeLeft": "24h left",
             "status": d.get("status", "pending"),
-            "youPct": d.get("youPct", 0),
-            "oppPct": d.get("oppPct", 0),
+            "youPct": you_pct,
+            "oppPct": opp_pct,
             "result": d.get("result"),
+            "viewerRole": viewer_role,
         })
 
     return ui_duels
+
+
+@app.post("/duels/{duelId}/accept")
+async def accept_duel(duelId: str, payload: DuelAcceptRequest):
+    """Opponent accepts a pending duel, moving it to active."""
+    db = get_db()
+    try:
+        duel = await db.duels.find_one({"_id": ObjectId(duelId)})
+    except Exception:
+        duel = None
+    if not duel:
+        raise HTTPException(status_code=404, detail="Duel not found.")
+    if duel.get("status") != "pending":
+        raise HTTPException(status_code=400, detail="Duel is not pending.")
+    if duel.get("opponentId") != payload.userId:
+        raise HTTPException(status_code=403, detail="Only the invited opponent can accept.")
+
+    await db.duels.update_one(
+        {"_id": duel["_id"]},
+        {"$set": {"status": "active", "accepted_at": datetime.utcnow().isoformat()}},
+    )
+
+    updated = await db.duels.find_one({"_id": duel["_id"]})
+    return {
+        "id": str(updated["_id"]),
+        "status": updated.get("status"),
+        "accepted_at": updated.get("accepted_at"),
+    }
 
 
 if __name__ == "__main__":
