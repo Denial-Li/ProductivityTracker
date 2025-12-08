@@ -5,7 +5,7 @@ from pydantic import BaseModel, EmailStr
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List
 
-from .database import connect_db, close_db, get_db
+from database import connect_db, close_db, get_db
 
 app = FastAPI()
 
@@ -40,7 +40,7 @@ async def on_shutdown():
 
 @app.get("/")
 def root():
-    return {"Hello": "World this app is working"}
+    return {"Hello": "backend running"}
 
 
 @app.post("/auth/login")
