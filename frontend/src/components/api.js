@@ -1,9 +1,11 @@
-import axios from 'axios';
+import axios from "axios";
 
-// Create an instance of axios with the base URL
+// Prefer a deploy-friendly base URL from env, fall back to local dev API.
+export const API_BASE =
+  import.meta.env.VITE_API_BASE || "http://localhost:8000";
+
 const api = axios.create({
-  baseURL: "http://localhost:8000"
+  baseURL: API_BASE,
 });
 
-// Export the Axios instance
 export default api;

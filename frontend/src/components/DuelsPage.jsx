@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./duelsPage.css";
+import { API_BASE } from "./api";
 
-const API_BASE = "http://localhost:8000";
 const HABIT_ICONS = {
   sleep: "🌙",
   hydration: "💧",

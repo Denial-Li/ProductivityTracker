@@ -16,10 +16,14 @@ import hashlib
 load_dotenv()
 app = FastAPI()
 
-origins = [
-    "http://localhost:5173",
-    # add url here later (deployed frontend)
+# Allow local dev plus any comma-separated origins from env (e.g., Vercel URL)
+default_origins = ["http://localhost:5173"]
+extra_origins = [
+    origin.strip()
+    for origin in os.getenv("FRONTEND_ORIGINS", "").split(",")
+    if origin.strip()
 ]
+origins = default_origins + extra_origins
 
 app.add_middleware(
     CORSMiddleware,

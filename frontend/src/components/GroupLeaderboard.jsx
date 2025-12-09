@@ -1,13 +1,14 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import "./leaderboard.css";
+import { API_BASE } from "./api";
 
 export default function GroupLeaderboard() {
   const { groupId } = useParams();
   const [users, setUsers] = useState([]);
   const userId = localStorage.getItem("userId");
   const fetchData = async () => {
-    const res = await fetch(`http://localhost:8000/leaderboard/${groupId}`);
+    const res = await fetch(`${API_BASE}/leaderboard/${groupId}`);
     const data = await res.json();
     setUsers(data);
   };

@@ -1,8 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./homePage.css";
-
-const API_BASE = "http://localhost:8000";
+import { API_BASE } from "./api";
 
 const fallbackQuests = [
   {

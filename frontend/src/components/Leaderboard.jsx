@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import "./leaderboard.css";
 import { useNavigate } from "react-router-dom";
+import { API_BASE } from "./api";
 
 export default function Leaderboard() {
   const [users, setUsers] = useState([]);
   const userId = localStorage.getItem("userId");
   const fetchData = async () => {
-    const res = await fetch("http://localhost:8000/leaderboard");
+    const res = await fetch(`${API_BASE}/leaderboard`);
     const data = await res.json();
     setUsers(data);
   };
