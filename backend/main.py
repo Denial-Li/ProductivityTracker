@@ -33,7 +33,9 @@ class LoginRequest(BaseModel):
     email: EmailStr
     password: str
 
+#add a quest ID as well to keep track of xp counts
 class QuestRequest(BaseModel):
+    _id: str
     userId: str
     title: str
     xp: int
@@ -42,6 +44,8 @@ class QuestRequest(BaseModel):
 class RegisterRequest(BaseModel):
     email: EmailStr
     password: str
+    #incorporate xp value as well
+    xp: int
 
 class DuelCreateRequest(BaseModel):
     #duel creator
@@ -111,6 +115,7 @@ async def register(payload: RegisterRequest):
         "email": payload.email,
         "password": hash_password(payload.password),
         "created_at": datetime.utcnow().isoformat(),
+        "xp": 0
     }
     result = await db.users.insert_one(doc)
 
@@ -118,6 +123,7 @@ async def register(payload: RegisterRequest):
         "id": str(result.inserted_id),
         "email": doc["email"],
         "created_at": doc["created_at"],
+        "xp": doc["xp"]
     }
 
 #quests adding
@@ -129,19 +135,6 @@ async def create_quest(quest: QuestRequest):
     data["_id"] = str(result.inserted_id)
     return data
 
-'''
-@app.post("/quests/raw")
-async def raw_body(request: Request):
-    body = await request.json()
-    print("RAW BODY:", body)
-    return {"received": body}
-
-
-@app.post("/quests")
-async def create_quest(quest: QuestRequest):
-    print("REQUEST DATA:", quest)
-    return {"ok": True}'''
-
 
 #fetch quests
 @app.get("/quests/{userId}")
@@ -152,6 +145,30 @@ async def list_quests(userId: str):
     for q in quests:
         q["_id"] = str(q["_id"])
     return quests
+
+#when user completes a quest, make sure the xp value in the database is updated as well
+@app.post("/quests/complete/{questId}")
+async def complete_quest(questId: str):
+    db = get_db()
+
+    quest = await db.quests.find_one({"_id": ObjectId(questId)})
+    if not quest:
+        raise HTTPException(404, "Quest not found")
+
+    # mark quest complete
+    await db.quests.update_one(
+        {"_id": ObjectId(questId)},
+        {"$set": {"completed": True}}
+    )
+
+    # increment user xp
+    await db.users.update_one(
+        {"_id": ObjectId(quest["userId"])},
+        {"$inc": {"xp": quest["xp"]}}
+    )
+
+    return {"ok": True}
+
 
 
 @app.post("/groups")
