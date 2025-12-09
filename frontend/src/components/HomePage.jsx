@@ -99,3 +99,17 @@ function duelProgress(duel) {
   if (duel.status === "completed") return 100;
   return 40;
 }
+
+export default function HomePage() {
+  const navigate = useNavigate();
+  const [quests, setQuests] = useState(fallbackQuests);
+  const [duels, setDuels] = useState(fallbackDuels);
+  const user = useMemo(readStoredUser, []);
+
+  return (
+    <div>
+      {/* placeholder so component compiles */}
+      <p>HomePage loading…</p>
+    </div>
+  );
+}
