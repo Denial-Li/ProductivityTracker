@@ -1,4 +1,4 @@
-import "./JoinFriends.css";
+import "./joinFriends.css";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
