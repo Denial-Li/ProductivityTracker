@@ -151,6 +151,16 @@ export default function HomePage() {
   const displayName = user?.username || user?.name || user?.email || "@habitmaster";
   const streakDays = Number(localStorage.getItem("streakDays")) || rankSnapshot.streak;
   
+  const handleQuestComplete = (questId) => {
+    setQuests(prev =>
+      prev.map(q =>
+        q.id === questId
+          ? { ...q, completed: true, progressText: "Done for today" }
+          : q
+      )
+    );
+  };
+  
   return (
     <div>
       <p>HomePage loading…</p>
