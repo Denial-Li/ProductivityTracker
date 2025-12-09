@@ -44,7 +44,7 @@
 .home-eyebrow {
   letter-spacing: 0.05em;
   text-transform: uppercase;
-  color: #f0f3ff;
+  color: #000000;
   font-size: 12px;
   margin: 0 0 6px 0;
 }
@@ -141,7 +141,7 @@
 }
 
 .home-panel-wide {
-  width: 100%;
+  width: 95%;
 }
 
 .home-panel-head {
