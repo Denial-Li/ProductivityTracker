@@ -58,7 +58,7 @@ export default function QuestsPage() {
     fetchQuests();
   }, []);
 
-  const handleComplete = async (_id) => {
+  /**const handleComplete = async (_id) => {
     setQuests(prev =>
       prev.map(q =>
         q._id === _id 
@@ -66,7 +66,19 @@ export default function QuestsPage() {
           : q
       )
     );
+  };**/
+  const handleComplete = async (questId) => {
+    await fetch(`http://localhost:8000/quests/complete/${questId}`, {
+      method: "POST",
+    });
+  
+    // re-fetch quests to update UI
+    const userId = localStorage.getItem("userId");
+    const res = await fetch(`http://localhost:8000/quests/${userId}`);
+    const updated = await res.json();
+    setQuests(updated);
   };
+  
 
   const completedCount = quests.filter((q) => q.completed).length;
   const totalQuests = quests.length;
