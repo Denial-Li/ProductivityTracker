@@ -105,11 +105,43 @@ export default function HomePage() {
   const [quests, setQuests] = useState(fallbackQuests);
   const [duels, setDuels] = useState(fallbackDuels);
   const user = useMemo(readStoredUser, []);
+  useEffect(() => {
+    const userId = localStorage.getItem("userId");
+    if (!userId) return;
+
+    const loadData = async () => {
+      try {
+        const questRes = await fetch(`${API_BASE}/quests/${userId}`);
+        if (questRes.ok) {
+          const questData = await questRes.json();
+          if (Array.isArray(questData) && questData.length) {
+            setQuests(questData);
+          }
+        }
+      } catch (err) {
+        console.error("Could not load quests", err);
+      }
+
+      try {
+        const duelRes = await fetch(`${API_BASE}/duels/${userId}`);
+        if (duelRes.ok) {
+          const duelData = await duelRes.json();
+          if (Array.isArray(duelData) && duelData.length) {
+            setDuels(duelData);
+          }
+        }
+      } catch (err) {
+        console.error("Could not load duels", err);
+      }
+    };
+
+    loadData();
+  }, []);
 
   return (
     <div>
-      {/* placeholder so component compiles */}
       <p>HomePage loading…</p>
     </div>
   );
 }
+
